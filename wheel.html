@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GWARZ DayZ — Account</title>
+<title>GWARZ DayZ — Wheel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -33,30 +33,38 @@
 <main>
   <section class="section account-section">
     <div class="wrap">
-      <h1>Your GWARZ Account</h1>
-      <p class="section-note">Log in and link your Steam and Discord accounts. Head to the <a href="wheel.html">Wheel page</a> to spin for loot once you're linked.</p>
+      <h1>Loot Wheel</h1>
+      <p class="section-note">Earn a spin every 4 hours played on GWARZ, then spin for a shot at in-game loot. Claim your prize in-game from the GWARZ menu once you're on the server.</p>
 
       <div id="status-message" class="status-message" hidden></div>
 
       <div id="logged-out-view" hidden>
-        <button id="discord-login-btn" class="btn btn-primary">Log in with Discord</button>
+        <p class="section-note">Log in to check your spins and start winning loot.</p>
+        <a class="btn btn-primary" href="account.html">Log In</a>
       </div>
 
       <div id="logged-in-view" hidden>
         <div class="card account-card">
-          <h2>Linked Accounts</h2>
+          <h2>Your Spins</h2>
           <div class="server-row">
-            <span class="server-label">Discord</span>
-            <span id="discord-status" class="server-value">—</span>
+            <span class="server-label">Total playtime</span>
+            <span id="playtime-value" class="server-value">—</span>
           </div>
           <div class="server-row">
-            <span class="server-label">Steam</span>
-            <span id="steam-status" class="server-value">—</span>
+            <span class="server-label">Spins available</span>
+            <span id="spins-value" class="server-value">—</span>
           </div>
-          <button id="steam-link-btn" class="btn btn-primary" hidden>Link Steam Account</button>
+          <div class="account-actions">
+            <button id="sync-btn" class="btn btn-ghost">Sync Playtime</button>
+            <button id="spin-btn" class="btn btn-primary" disabled>Spin the Wheel</button>
+          </div>
         </div>
 
-        <button id="logout-btn" class="btn btn-ghost stacked-card">Log out</button>
+        <div class="card account-card stacked-card">
+          <h2>Your Rewards</h2>
+          <p class="section-note">Claim these in-game from the GWARZ menu once you're on the server.</p>
+          <ul id="rewards-list" class="rewards-list"></ul>
+        </div>
       </div>
     </div>
   </section>
@@ -74,7 +82,7 @@
 </footer>
 
 <script src="script.js"></script>
-<script src="account.js"></script>
+<script src="wheel.js"></script>
 <script src="profile-widget.js"></script>
 </body>
 </html>
