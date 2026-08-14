@@ -97,5 +97,4 @@ Workers needed.
 
 ## Known open items on the base site
 - Rules section still has placeholder text
-- Steam Query Port in `script.js` is a guess (2402) — worth confirming via
-  dayzsalauncher.com's "Check Server" tool
+- Steam Query Port confirmed as 2403 (updated 2026-08-14)

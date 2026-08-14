@@ -36,15 +36,17 @@ async function getUserFromAuthHeader(req: Request) {
   return data.user;
 }
 
-async function getCftoolsToken(): Promise<string> {
-  const { data: cached } = await admin
-    .from("cftools_token_cache")
-    .select("token, expires_at")
-    .eq("id", 1)
-    .maybeSingle();
+async function getCftoolsToken(forceRefresh = false): Promise<string> {
+  if (!forceRefresh) {
+    const { data: cached } = await admin
+      .from("cftools_token_cache")
+      .select("token, expires_at")
+      .eq("id", 1)
+      .maybeSingle();
 
-  if (cached && new Date(cached.expires_at).getTime() > Date.now() + 60_000) {
-    return cached.token;
+    if (cached && new Date(cached.expires_at).getTime() > Date.now() + 60_000) {
+      return cached.token;
+    }
   }
 
   const res = await fetch("https://data.cftools.cloud/v1/auth/register", {
@@ -75,10 +77,10 @@ async function getCftoolsToken(): Promise<string> {
   return token;
 }
 
-// Response schemas for these CFTools endpoints weren't confirmed from their docs,
-// so these walk the JSON looking for a plausibly-named field rather than assuming
-// one exact shape. If CFTools changes structure, check the Edge Function logs —
-// unmatched responses are logged in full before failing.
+// The /v1/users/lookup response schema wasn't confirmed from CFTools' docs, so this
+// still walks the JSON looking for a plausibly-named id field rather than assuming
+// one exact shape. The player-stats response shape below IS confirmed (see the
+// explicit dayz/omega access further down), so that part no longer needs this.
 function findString(obj: unknown, keys: string[]): string | null {
   if (obj === null || typeof obj !== "object") return null;
   for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
@@ -93,16 +95,28 @@ function findString(obj: unknown, keys: string[]): string | null {
   return null;
 }
 
-function findNumber(obj: unknown, key: string): number | null {
-  if (obj === null || typeof obj !== "object") return null;
-  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
-    if (k.toLowerCase() === key.toLowerCase() && typeof v === "number") return v;
-    if (typeof v === "object") {
-      const found = findNumber(v, key);
-      if (found !== null) return found;
+// Our cached token can go stale even before its recorded expiry (CFTools may
+// invalidate it early). If a request comes back with a bad/expired token error,
+// fetch a fresh one (bypassing the cache) and retry that request exactly once.
+async function cftoolsFetch(url: string, tokenBox: { token: string }): Promise<Response> {
+  const doFetch = () =>
+    fetch(url, {
+      headers: {
+        Authorization: `Bearer ${tokenBox.token}`,
+        "User-Agent": CFTOOLS_APPLICATION_ID,
+      },
+    });
+
+  let res = await doFetch();
+  if (res.status === 401 || res.status === 403) {
+    const bodyText = await res.clone().text();
+    if (bodyText.includes("bad-token") || bodyText.includes("expired-token") || bodyText.includes("token-regeneration-required")) {
+      console.log("CFTools token rejected, fetching a fresh one and retrying:", bodyText);
+      tokenBox.token = await getCftoolsToken(true);
+      res = await doFetch();
     }
   }
-  return null;
+  return res;
 }
 
 Deno.serve(async (req) => {
@@ -142,15 +156,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const token = await getCftoolsToken();
-    const authHeaders = {
-      Authorization: `Bearer ${token}`,
-      "User-Agent": CFTOOLS_APPLICATION_ID,
-    };
+    const tokenBox = { token: await getCftoolsToken() };
 
-    const lookupRes = await fetch(
+    const lookupRes = await cftoolsFetch(
       `https://data.cftools.cloud/v1/users/lookup?identifier=${encodeURIComponent(player.steam_id)}`,
-      { headers: authHeaders }
+      tokenBox
     );
     if (!lookupRes.ok) {
       throw new Error(`CFTools user lookup failed: ${lookupRes.status} ${await lookupRes.text()}`);
@@ -162,15 +172,23 @@ Deno.serve(async (req) => {
       throw new Error("Could not resolve CFTools account id from lookup response");
     }
 
-    const statsRes = await fetch(
+    const statsRes = await cftoolsFetch(
       `https://data.cftools.cloud/v2/server/${CFTOOLS_SERVER_ID}/player?cftools_id=${encodeURIComponent(cftoolsId)}`,
-      { headers: authHeaders }
+      tokenBox
     );
     if (!statsRes.ok) {
       throw new Error(`CFTools player stats failed: ${statsRes.status} ${await statsRes.text()}`);
     }
     const statsBody = await statsRes.json();
-    const playtimeSeconds = findNumber(statsBody, "playtime");
+
+    // The response is keyed by an opaque per-player document id (not a fixed name),
+    // alongside sibling "identities"/"status" keys — find that one and drill into
+    // the confirmed shape: { game: { dayz: { kills: {players, infected, ...}, ... } }, omega: { playtime } }
+    const rootKey = Object.keys(statsBody).find((k) => k !== "identities" && k !== "status");
+    const dayz = rootKey ? statsBody[rootKey]?.game?.dayz : undefined;
+    const omega = rootKey ? statsBody[rootKey]?.omega : undefined;
+
+    const playtimeSeconds = typeof omega?.playtime === "number" ? omega.playtime : null;
     if (playtimeSeconds === null) {
       console.error("CFTools player stats response had no playtime field:", JSON.stringify(statsBody));
       throw new Error("Could not find playtime in CFTools player stats response");
@@ -180,13 +198,13 @@ Deno.serve(async (req) => {
     const updates: Record<string, unknown> = {
       total_playtime_seconds: Math.round(playtimeSeconds),
       updated_at: new Date().toISOString(),
-      kills: findNumber(statsBody, "kills"),
-      deaths: findNumber(statsBody, "deaths"),
-      kd_ratio: findNumber(statsBody, "kdratio"),
-      longest_kill: findNumber(statsBody, "longest_kill"),
-      longest_shot: findNumber(statsBody, "longest_shot"),
-      kills_infected: findNumber(statsBody, "kills_infected"),
-      suicides: findNumber(statsBody, "suicides"),
+      kills: typeof dayz?.kills?.players === "number" ? dayz.kills.players : null,
+      deaths: typeof dayz?.deaths === "number" ? dayz.deaths : null,
+      kd_ratio: typeof dayz?.kdratio === "number" ? dayz.kdratio : null,
+      longest_kill: typeof dayz?.longest_kill === "number" ? dayz.longest_kill : null,
+      longest_shot: typeof dayz?.longest_shot === "number" ? dayz.longest_shot : null,
+      kills_infected: typeof dayz?.kills?.infected === "number" ? dayz.kills.infected : null,
+      suicides: typeof dayz?.suicides === "number" ? dayz.suicides : null,
     };
     if (newSpinsAwardedTotal > player.spins_awarded_total) {
       updates.spins_awarded_total = newSpinsAwardedTotal;

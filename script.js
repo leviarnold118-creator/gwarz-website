@@ -4,7 +4,7 @@ const CONFIG = {
   map: "Namalsk",
   ip: "172.93.100.11",
   port: "2402",       // game connect port, shown to players
-  queryPort: "2402",  // Steam QUERY port — often different from the connect port above, double check this in your host control panel
+  queryPort: "2403",  // Steam QUERY port
   discordUrl: "https://discord.gg/8kvpTD9wdA",
   cashAppUrl: "https://cash.app/$leviarnold21",
   paypalUrl: "https://paypal.me/chinachik",
