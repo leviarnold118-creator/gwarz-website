@@ -328,6 +328,43 @@ a { color: inherit; text-decoration: none; }
   background: rgba(0, 0, 0, 0.75);
 }
 
+.video-sound-hint {
+  position: absolute;
+  bottom: 22px;
+  right: 64px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--card-border);
+  color: var(--brand);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: hint-fade-out 6s ease forwards;
+}
+
+.hint-arrow {
+  display: inline-block;
+  animation: hint-nudge 1s ease-in-out infinite;
+}
+
+@keyframes hint-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes hint-fade-out {
+  0%, 75% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
 /* Card */
 
 .card {

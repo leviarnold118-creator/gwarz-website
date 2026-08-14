@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // (enablejsapi=1 on the iframe src is what allows this).
   const introVideo = document.getElementById("gwarz-intro-video");
   const muteToggle = document.getElementById("video-mute-toggle");
+  const soundHint = document.getElementById("video-sound-hint");
   if (introVideo && muteToggle) {
     let muted = true;
     muteToggle.addEventListener("click", () => {
@@ -68,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "https://www.youtube.com"
       );
       muteToggle.textContent = muted ? "🔇" : "🔊";
+      if (soundHint) soundHint.style.display = "none";
     });
   }
 });
