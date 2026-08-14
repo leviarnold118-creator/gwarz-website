@@ -67,16 +67,15 @@ async function loadRewards() {
 }
 
 async function refreshPlayerData() {
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return;
-
-  const { data: player } = await sb
-    .from("players")
-    .select("discord_username, steam_username, steam_id, total_playtime_seconds, spins_available")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!player) return;
+  let player;
+  try {
+    const res = await authedFetch("ensure-profile", { method: "POST" });
+    const body = await res.json();
+    if (!body.player) return;
+    player = body.player;
+  } catch (e) {
+    return;
+  }
 
   discordStatusEl.textContent = player.discord_username || "Linked";
 

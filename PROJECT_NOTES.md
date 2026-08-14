@@ -43,8 +43,9 @@ Workers needed.
 - [ ] `cftools-sync` Edge Function
 - [ ] `spin-wheel` Edge Function
 - [ ] `mod-claim-rewards` Edge Function
-- [ ] Website login/account/wheel UI
+- [x] Website login/account/wheel UI — pushed live 2026-08-13, commit c364150
 - [ ] Gwarz-UI mod in-game claim menu
+- [ ] End-to-end testing of login -> Steam link -> sync -> spin (not yet verified live)
 
 ### Wheel/reward rules (decided 2026-08-13)
 - 1 spin earned per 4 hours of playtime
