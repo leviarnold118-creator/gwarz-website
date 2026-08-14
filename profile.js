@@ -6,7 +6,9 @@ const SUPABASE_URL = "https://sbbklhpmbbiaxknieojc.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_117mO-KFUzYyKJfrMXAKbA_RTvzuc4I";
 const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Shared across scripts on this page — creating more than one client against the
+// same project causes them to interfere with each other's session detection.
+const sb = window.sb || (window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY));
 
 const loggedOutNotice = document.getElementById("logged-out-notice");
 const profileView = document.getElementById("profile-view");
