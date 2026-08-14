@@ -44,8 +44,26 @@ Workers needed.
 - [ ] `spin-wheel` Edge Function
 - [ ] `mod-claim-rewards` Edge Function
 - [x] Website login/account/wheel UI — pushed live 2026-08-13, commit c364150
+- [x] Profile page + header avatar widget with combat stats (kills/deaths/K:D/longest shot)
+- [x] End-to-end tested live 2026-08-13: Discord login, Steam linking, CFTools playtime
+      sync, wheel spin, profile avatar/stats all confirmed working.
 - [ ] Gwarz-UI mod in-game claim menu
-- [ ] End-to-end testing of login -> Steam link -> sync -> spin (not yet verified live)
+
+### Bugs found + fixed during live testing (for future reference)
+- `service_role` and `authenticated` both lacked explicit table GRANTs (separate from
+  RLS policies) — this Supabase project doesn't auto-grant them like older projects do.
+  Fixed via migrations 004 and 006. If a future new table hits silent/403 failures,
+  check this first.
+- `players` row was only created lazily during Steam linking, and Discord identity
+  fields were never populated at all — fixed by adding the `ensure-profile` function,
+  called right after login.
+- `.account-grid { display: grid }` was overriding the browser's default `[hidden]`
+  behavior (author CSS beats user-agent CSS regardless of specificity) — fixed with a
+  global `[hidden] { display: none !important; }` rule.
+- Creating more than one Supabase client per page (account.js/profile.js each making
+  their own, plus profile-widget.js making another) caused session-detection to fail
+  intermittently — fixed by sharing one client via `window.sb`, with script tags
+  ordered so the page's main script creates it before profile-widget.js runs.
 
 ### Wheel/reward rules (decided 2026-08-13)
 - 1 spin earned per 4 hours of playtime
