@@ -45,8 +45,9 @@ Workers needed.
 - [ ] `mod-claim-rewards` Edge Function
 - [x] Website login/account/wheel UI — pushed live 2026-08-13, commit c364150
 - [x] Profile page + header avatar widget with combat stats (kills/deaths/K:D/longest shot)
-- [x] End-to-end tested live 2026-08-13: Discord login, Steam linking, CFTools playtime
-      sync, wheel spin, profile avatar/stats all confirmed working.
+- [x] End-to-end tested live 2026-08-13/14: Discord login, Steam linking, CFTools
+      playtime sync, wheel spin, profile avatar/stats — all confirmed working
+      correctly with real data (kills/deaths/K:D/longest shot verified accurate).
 - [ ] Gwarz-UI mod in-game claim menu
 
 ### Bugs found + fixed during live testing (for future reference)
