@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GWARZ DayZ</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -17,7 +18,10 @@
       <a href="#support">Support</a>
       <a href="account.html">Account</a>
     </nav>
-    <a class="btn btn-ghost" href="#" data-discord-link target="_blank" rel="noopener">Discord</a>
+    <div class="header-right">
+      <div id="profile-widget" class="profile-widget"></div>
+      <a class="btn btn-ghost" href="#" data-discord-link target="_blank" rel="noopener">Discord</a>
+    </div>
   </div>
 </header>
 
@@ -109,5 +113,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="profile-widget.js"></script>
 </body>
 </html>

@@ -180,6 +180,13 @@ Deno.serve(async (req) => {
     const updates: Record<string, unknown> = {
       total_playtime_seconds: Math.round(playtimeSeconds),
       updated_at: new Date().toISOString(),
+      kills: findNumber(statsBody, "kills"),
+      deaths: findNumber(statsBody, "deaths"),
+      kd_ratio: findNumber(statsBody, "kdratio"),
+      longest_kill: findNumber(statsBody, "longest_kill"),
+      longest_shot: findNumber(statsBody, "longest_shot"),
+      kills_infected: findNumber(statsBody, "kills_infected"),
+      suicides: findNumber(statsBody, "suicides"),
     };
     if (newSpinsAwardedTotal > player.spins_awarded_total) {
       updates.spins_awarded_total = newSpinsAwardedTotal;
@@ -189,7 +196,9 @@ Deno.serve(async (req) => {
       .from("players")
       .update(updates)
       .eq("id", player.id)
-      .select("total_playtime_seconds, spins_awarded_total, spins_used_total, spins_available")
+      .select(
+        "total_playtime_seconds, spins_awarded_total, spins_used_total, spins_available, kills, deaths, kd_ratio, longest_shot"
+      )
       .single();
 
     if (updateError) throw updateError;

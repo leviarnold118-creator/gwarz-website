@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GWARZ DayZ — Profile</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="index.html#top" class="logo">GWARZ</a>
+    <nav class="nav">
+      <a href="index.html#connect">Connect</a>
+      <a href="index.html#rules">Rules</a>
+      <a href="index.html#support">Support</a>
+      <a href="account.html">Account</a>
+    </nav>
+    <div class="header-right">
+      <div id="profile-widget" class="profile-widget"></div>
+      <a class="btn btn-ghost" href="#" data-discord-link target="_blank" rel="noopener">Discord</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section account-section">
+    <div class="wrap">
+
+      <div id="logged-out-notice" hidden>
+        <p class="section-note">You need to be logged in to view a profile.</p>
+        <a class="btn btn-primary" href="account.html">Go to Account</a>
+      </div>
+
+      <div id="profile-view" hidden>
+        <div class="profile-header">
+          <div id="profile-avatar-large" class="profile-avatar-large"></div>
+          <div>
+            <h1 id="profile-name">—</h1>
+            <p id="profile-sub" class="section-note">—</p>
+          </div>
+        </div>
+
+        <div class="card account-card account-card-wide">
+          <h2>Combat Stats</h2>
+          <div class="stat-grid">
+            <div class="stat-tile"><span class="stat-label">Kills</span><span id="stat-kills" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Deaths</span><span id="stat-deaths" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">K/D Ratio</span><span id="stat-kd" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Longest Shot</span><span id="stat-longest-shot" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Longest Kill</span><span id="stat-longest-kill" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Infected Kills</span><span id="stat-infected" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Suicides</span><span id="stat-suicides" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Total Playtime</span><span id="stat-playtime" class="stat-value">—</span></div>
+            <div class="stat-tile"><span class="stat-label">Spins Available</span><span id="stat-spins" class="stat-value">—</span></div>
+          </div>
+          <div class="account-actions">
+            <button id="sync-btn" class="btn btn-ghost">Sync Stats</button>
+            <a class="btn btn-primary" href="account.html">Manage Account</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>&copy; <span data-year></span> GWARZ DayZ</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="profile-widget.js"></script>
+<script src="profile.js"></script>
+</body>
+</html>
