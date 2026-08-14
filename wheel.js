@@ -51,7 +51,7 @@ async function loadRewards() {
 
   rewardsListEl.innerHTML = "";
   if (error || !data || data.length === 0) {
-    rewardsListEl.innerHTML = "<li>No rewards yet — spin the wheel once you've earned a spin.</li>";
+    rewardsListEl.innerHTML = "<li>No rewards yet — spin the roulette once you've earned a spin.</li>";
     return;
   }
 
