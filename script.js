@@ -54,4 +54,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Intro video mute toggle — talks to the YouTube embed via its postMessage API
+  // (enablejsapi=1 on the iframe src is what allows this).
+  const introVideo = document.getElementById("gwarz-intro-video");
+  const muteToggle = document.getElementById("video-mute-toggle");
+  if (introVideo && muteToggle) {
+    let muted = true;
+    muteToggle.addEventListener("click", () => {
+      muted = !muted;
+      introVideo.contentWindow.postMessage(
+        JSON.stringify({ event: "command", func: muted ? "mute" : "unMute", args: [] }),
+        "https://www.youtube.com"
+      );
+      muteToggle.textContent = muted ? "🔇" : "🔊";
+    });
+  }
 });
