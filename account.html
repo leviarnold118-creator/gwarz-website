@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GWARZ DayZ — Account</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="index.html#top" class="logo">GWARZ</a>
+    <nav class="nav">
+      <a href="index.html#connect">Connect</a>
+      <a href="index.html#rules">Rules</a>
+      <a href="index.html#support">Support</a>
+      <a href="account.html">Account</a>
+    </nav>
+    <a class="btn btn-ghost" href="#" data-discord-link target="_blank" rel="noopener">Discord</a>
+  </div>
+</header>
+
+<main>
+  <section class="section account-section">
+    <div class="wrap">
+      <h1>Your GWARZ Account</h1>
+      <p class="section-note">Log in, link your Steam and Discord accounts, and spin the wheel with spins you've earned from playtime on the server.</p>
+
+      <div id="status-message" class="status-message" hidden></div>
+
+      <div id="logged-out-view" hidden>
+        <button id="discord-login-btn" class="btn btn-primary">Log in with Discord</button>
+      </div>
+
+      <div id="logged-in-view" class="account-grid" hidden>
+        <div class="card account-card">
+          <h2>Linked Accounts</h2>
+          <div class="server-row">
+            <span class="server-label">Discord</span>
+            <span id="discord-status" class="server-value">—</span>
+          </div>
+          <div class="server-row">
+            <span class="server-label">Steam</span>
+            <span id="steam-status" class="server-value">—</span>
+          </div>
+          <button id="steam-link-btn" class="btn btn-primary" hidden>Link Steam Account</button>
+        </div>
+
+        <div class="card account-card">
+          <h2>Playtime &amp; Spins</h2>
+          <div class="server-row">
+            <span class="server-label">Total playtime</span>
+            <span id="playtime-value" class="server-value">—</span>
+          </div>
+          <div class="server-row">
+            <span class="server-label">Spins available</span>
+            <span id="spins-value" class="server-value">—</span>
+          </div>
+          <div class="account-actions">
+            <button id="sync-btn" class="btn btn-ghost">Sync Playtime</button>
+            <button id="spin-btn" class="btn btn-primary" disabled>Spin the Wheel</button>
+          </div>
+        </div>
+
+        <div class="card account-card account-card-wide">
+          <h2>Your Rewards</h2>
+          <p class="section-note">Claim these in-game from the GWARZ menu once you're on the server.</p>
+          <ul id="rewards-list" class="rewards-list"></ul>
+        </div>
+
+        <button id="logout-btn" class="btn btn-ghost">Log out</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>&copy; <span data-year></span> GWARZ DayZ</span>
+    <div class="footer-links">
+      <a href="#" data-discord-link target="_blank" rel="noopener">Discord</a>
+      <a href="#" data-cashapp-link target="_blank" rel="noopener">CashApp</a>
+      <a href="#" data-paypal-link target="_blank" rel="noopener">PayPal</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="account.js"></script>
+</body>
+</html>
