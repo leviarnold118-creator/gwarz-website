@@ -3,99 +3,102 @@
 ## Live site
 https://leviarnold118-creator.github.io/gwarz-website/
 Repo: https://github.com/leviarnold118-creator/gwarz-website
-Edit files locally in this folder, then `git add` / `git commit` / `git push` — Pages auto-rebuilds.
+Edit files locally in this folder, then `git add` / `git commit` / `git push` — Pages auto-rebuilds within a minute or two.
 
-## Feature in progress: login + Steam/Discord linking + playtime roulette wheel
+## Site structure
+- `index.html` — landing page: hero, Gallery (screenshots + auto-playing YouTube intro
+  video with a mute toggle), Connect, Rules, Support
+- `account.html` — Discord login + Steam account linking only
+- `wheel.html` — playtime sync, spin-the-wheel, and the rewards claim list
+- `profile.html` — read-only avatar + combat stats (kills/deaths/K:D/longest shot/etc)
+- `profile-widget.js` — shared header avatar (links to profile.html when logged in,
+  placeholder silhouette linking to account.html when logged out); loaded on every page
+- `script.js` — shared config (server IP/ports/links) + intro video mute toggle
+- `style.css` — gritty military/survival theme: Black Ops One (headings), Rajdhani
+  (body), Share Tech Mono (numbers/labels/IP), angular clip-path cards/buttons instead
+  of rounded corners, film-grain/scanline overlay, hazard-stripe accents
+- `media/` — screenshot-1.jpg, screenshot-2.jpg (from `C:\Users\levia\Downloads\namalsk*.jpg`)
+- `backend/sql/` — numbered migrations, run in order in Supabase's SQL Editor
+- `backend/functions/` — source-of-truth copies of each deployed Edge Function
+- `SECRETS.local.md` — gitignored, holds every credential; never paste its contents
+  into chat again once recorded there
 
-**Goal:** Players earn a roulette-wheel spin every few hours of playtime on the GWARZ DayZ
-server. To claim a win, they must log into the website and link both their Discord and
-Steam accounts. Reward delivery: an in-game claim menu added to the Gwarz-UI mod
+## Feature: login + Steam/Discord linking + playtime loot wheel
+
+**Goal:** Players earn a wheel spin every 4 hours of playtime on the GWARZ DayZ server.
+To claim a win, they log into the website and link both Discord and Steam. Reward
+delivery: an in-game claim menu (still to build) in the Gwarz-UI mod
 (`C:\Users\levia\Desktop\Gwarz-UI`) that spawns the won item near the player.
 
-**Playtime source:** CFTools Cloud (already managing the GWARZ server). Their Data API
-may require a paid "Basic" subscription tier for the player-stats endpoints — confirm
-before relying on it.
+**Stack:** Supabase (Postgres + Auth + Edge Functions, free tier) for everything
+backend — no separate host needed. CFTools Cloud Data API for playtime/combat stats.
 
-**Backend plan:** Supabase (free tier) for the database, auth, and serverless backend
-logic (Edge Functions) — one service instead of a separate host + database. No Cloudflare
-Workers needed.
+### Status: fully built and verified working live (as of 2026-08-14)
+- [x] Supabase project `sbbklhpmbbiaxknieojc`, all accounts/credentials set up
+- [x] Database schema (migrations 001–006, see `backend/sql/`)
+- [x] Edge Functions, all deployed and confirmed working: `steam-login`,
+      `cftools-sync`, `spin-wheel`, `mod-claim-rewards`, `ensure-profile`
+- [x] Website: login, Steam linking, playtime sync, wheel spin, profile stats,
+      dedicated wheel page — all tested end-to-end with real data
+- [x] Homepage gallery: screenshots + auto-playing muted YouTube intro video
+- [x] Gritty military visual redesign across all pages
+- [ ] **Not yet built:** Gwarz-UI mod in-game claim menu (the only remaining piece —
+      players can win rewards on the site but can't claim them in-game yet)
 
-### Accounts/credentials needed (create these yourself — I can't do account creation for you)
-- [x] Supabase account + project — "gwarz website" project, ref `sbbklhpmbbiaxknieojc`
-      - Project URL: `https://sbbklhpmbbiaxknieojc.supabase.co`
-      - Publishable (anon) key: `sb_publishable_117mO-KFUzYyKJfrMXAKbA_RTvzuc4I` (safe to expose client-side)
-      - Secret key: stored only in Supabase dashboard — never paste this one into chat or commit it
-- [~] Discord Developer app — "gwarz website" app created, Client ID `1537463084938035270`.
-      Secret goes straight into Supabase Auth Providers, not stored here. Redirect URI
-      set to `https://sbbklhpmbbiaxknieojc.supabase.co/auth/v1/callback`.
-- [x] Steam Web API key — registered to domain `leviarnold118-creator.github.io`.
-      Value saved in `SECRETS.local.md` (gitignored, never pushed to GitHub).
-- [x] CFTools Cloud Data API application — application_id `6a7dd37607702b3c7063e814`,
-      authorized against the NAMALSK server. Secret in `SECRETS.local.md`.
-
-**All four setup accounts complete as of 2026-08-13.**
-
-### Backend build status
-- [x] Database schema applied (001 + 002)
-- [x] `steam-login` Edge Function deployed. Secrets set: STEAM_API_KEY, SITE_URL.
-      TODO: confirm whether a gateway-level JWT-verification toggle needs disabling —
-      couldn't find one in the dashboard; will confirm during end-to-end login testing.
-- [ ] `cftools-sync` Edge Function
-- [ ] `spin-wheel` Edge Function
-- [ ] `mod-claim-rewards` Edge Function
-- [x] Website login/account/wheel UI — pushed live 2026-08-13, commit c364150
-- [x] Profile page + header avatar widget with combat stats (kills/deaths/K:D/longest shot)
-- [x] End-to-end tested live 2026-08-13/14: Discord login, Steam linking, CFTools
-      playtime sync, wheel spin, profile avatar/stats — all confirmed working
-      correctly with real data (kills/deaths/K:D/longest shot verified accurate).
-- [ ] Gwarz-UI mod in-game claim menu
-
-### Bugs found + fixed during live testing (for future reference)
-- `service_role` and `authenticated` both lacked explicit table GRANTs (separate from
-  RLS policies) — this Supabase project doesn't auto-grant them like older projects do.
-  Fixed via migrations 004 and 006. If a future new table hits silent/403 failures,
-  check this first.
-- `players` row was only created lazily during Steam linking, and Discord identity
-  fields were never populated at all — fixed by adding the `ensure-profile` function,
-  called right after login.
-- `.account-grid { display: grid }` was overriding the browser's default `[hidden]`
-  behavior (author CSS beats user-agent CSS regardless of specificity) — fixed with a
-  global `[hidden] { display: none !important; }` rule.
-- Creating more than one Supabase client per page (account.js/profile.js each making
-  their own, plus profile-widget.js making another) caused session-detection to fail
-  intermittently — fixed by sharing one client via `window.sb`, with script tags
-  ordered so the page's main script creates it before profile-widget.js runs.
-
-### Wheel/reward rules (decided 2026-08-13)
+### Wheel/reward rules
 - 1 spin earned per 4 hours of playtime
-- Rewards are in-game items only (placeholder item list until real classnames/weights given)
+- Rewards are in-game items only — **still placeholder items** (`PLACEHOLDER_*`
+  classnames in `backend/functions/spin-wheel/index.ts`) until real DayZ classnames/
+  weights are given
 - Spins and unclaimed rewards bank indefinitely, no expiry
 
-### CFTools Cloud Data API (confirmed from their docs, 2026-08-13)
-- Base URL: `https://data.cftools.cloud`
-- Auth: `POST /v1/auth/register` with JSON body `{application_id, secret}` → bearer token, valid 24h (rate limit 2/min)
-- All requests need `User-Agent` header containing the application_id
-- Authenticated requests: `Authorization: Bearer {token}`
-- `GET /v1/@app/grants` — lists servers this app is authorized against (rate limit 1/min);
-  Edge Function will call this at runtime to resolve the `server_api_id` rather than
-  hardcoding it, since it wasn't confirmed whether it matches the game-server plugin's
-  `Server ID` GUID.
-- `GET /v1/users/lookup?identifier={steam64}` — resolves a Steam64 ID to a CFTools
-  account id (rate limit 20/min). Response schema not shown in docs — handle defensively.
-- `GET /v2/server/{server_api_id}/player?cftools_id={id}` — individual player stats
-  including `playtime` for that server (rate limit 120/min)
-- `GET /v1/server/{server_api_id}/leaderboard?stat=playtime&order=-1&limit=N` — also
-  available if a public leaderboard page is wanted later
+### CFTools Cloud Data API — confirmed real shape (learned by trial, 2026-08-14)
+- Base URL: `https://data.cftools.cloud`; every request needs a `User-Agent` header
+  containing the application_id
+- `POST /v1/auth/register` `{application_id, secret}` → bearer token (24h, but can go
+  stale early — `cftools-sync` retries once with a fresh token on `bad-token` errors)
+- `GET /v1/users/lookup?identifier={steam64}` → resolves to a CFTools account id
+- `GET /v2/server/{server_api_id}/player?cftools_id={id}` → real shape:
+  ```
+  { "<opaque_id>": { "game": { "dayz": {
+        deaths, kdratio, longest_kill, longest_shot, suicides,
+        kills: { ai, animals, infected, players },   // NOT a single number!
+        weapons: { "<classname>": { kills, deaths, longest_kill, ... }, ... }
+      } },
+      "omega": { playtime, sessions, name_history } },
+    "identities": { "steam": { "steam64" }, ... }, "status": true }
+  ```
+  "Kills" for the site = `dayz.kills.players` (PvP kills). `kills_infected` =
+  `dayz.kills.infected`. `total_playtime_seconds` = `omega.playtime`.
+- `CFTOOLS_SERVER_ID` env var = the GUID from the game-server plugin's own "Server ID"
+  page (`045158ac-672e-4287-90ac-5ff7bb4824fc`) — confirmed correct, no need to resolve
+  via `/v1/@app/grants` dynamically.
 
-### Once credentials exist, Claude writes:
-- Discord OAuth2 login flow
-- Steam OpenID 2.0 login flow
-- Account-linking (one player profile with both identities attached)
-- Supabase schema: players, linked_accounts, playtime_cache, rewards_ledger
-- Wheel-spin eligibility logic based on CFTools playtime
-- Secured REST endpoint for the Gwarz-UI mod to fetch/claim pending rewards
-- In-game claim menu (mod-side Enforce Script)
+### Bugs found + fixed during build (for future reference — check these first if
+something new breaks the same way)
+- **Supabase table grants:** `service_role` and `authenticated` both lacked explicit
+  table GRANTs on new tables (separate from RLS policies) — this project doesn't
+  auto-grant them like older Supabase projects do. Fixed via migrations 004 and 006.
+  Any new table will need the same treatment.
+- **CSS `[hidden]` override:** `.account-grid { display: grid }` (now removed) beat the
+  browser's default `[hidden] { display: none }` because author CSS always wins over
+  user-agent CSS regardless of specificity. Fixed with a global
+  `[hidden] { display: none !important; }` rule — keep that rule if adding any new
+  `display:` value on an element that also uses the `hidden` attribute.
+- **Multiple Supabase clients per page:** account.js/profile.js/wheel.js each making
+  their own client, plus profile-widget.js making another, caused session-detection to
+  fail intermittently. Fixed by sharing one client via `window.sb`; every page's script
+  tags must load the page's own script *before* `profile-widget.js`.
+- **CFTools stat field guessing:** a generic recursive field-name search matched the
+  wrong nested value (a random weapon's kill count instead of total PvP kills). Fixed
+  by hardcoding the confirmed response shape (see above) instead of guessing.
+- **Edge Function slug mismatch:** the dashboard's "Name" field on function creation is
+  just a display label — the actual URL slug locks in from whatever was in the name box
+  *at deploy time*. Always set the name before pasting code/deploying, not after.
 
-## Known open items on the base site
-- Rules section still has placeholder text
-- Steam Query Port confirmed as 2403 (updated 2026-08-14)
+## Known open items
+- Rules section still has placeholder text (`index.html` #rules)
+- Wheel rewards are placeholder items — swap in real DayZ classnames/weights whenever
+  ready (`backend/functions/spin-wheel/index.ts`)
+- Gwarz-UI mod in-game claim menu not built yet — the last piece connecting the website
+  wheel to actually receiving items in-game
