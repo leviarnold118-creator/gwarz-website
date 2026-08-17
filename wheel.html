@@ -38,6 +38,26 @@
 
       <div id="status-message" class="status-message" hidden></div>
 
+      <div class="card wheel-card">
+        <div class="wheel-stage">
+          <div class="wheel-pointer"></div>
+          <svg id="wheel-svg" viewBox="0 0 300 300">
+            <g id="wheel-rotor"></g>
+            <circle cx="150" cy="150" r="142" fill="none" stroke="var(--brand)" stroke-width="6"></circle>
+            <circle cx="150" cy="150" r="26" fill="var(--bg-alt)" stroke="var(--brand)" stroke-width="3"></circle>
+          </svg>
+        </div>
+        <div class="wheel-controls">
+          <span id="spins-value" class="wheel-spins-hint">— spins available</span>
+          <button id="spin-btn" class="btn btn-primary" disabled>Spin the Roulette</button>
+        </div>
+      </div>
+
+      <div class="winnings-section">
+        <h2>Possible Winnings</h2>
+        <div id="winnings-grid" class="winnings-grid"></div>
+      </div>
+
       <div id="logged-out-view" hidden>
         <p class="section-note">Log in to check your spins and start winning loot.</p>
         <a class="btn btn-primary" href="account.html">Log In</a>
@@ -50,13 +70,8 @@
             <span class="server-label">Total playtime</span>
             <span id="playtime-value" class="server-value">—</span>
           </div>
-          <div class="server-row">
-            <span class="server-label">Spins available</span>
-            <span id="spins-value" class="server-value">—</span>
-          </div>
           <div class="account-actions">
             <button id="sync-btn" class="btn btn-ghost">Sync Playtime</button>
-            <button id="spin-btn" class="btn btn-primary" disabled>Spin the Roulette</button>
           </div>
         </div>
 
