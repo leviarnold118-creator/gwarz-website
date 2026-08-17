@@ -17,6 +17,11 @@ const spinsValueEl = document.getElementById("spins-value");
 const syncBtn = document.getElementById("sync-btn");
 const spinBtn = document.getElementById("spin-btn");
 const rewardsListEl = document.getElementById("rewards-list");
+const tabPendingBtn = document.getElementById("tab-pending");
+const tabHistoryBtn = document.getElementById("tab-history");
+
+let allRewards = [];
+let activeTab = "pending";
 
 function showStatus(text, isError = false) {
   statusMessageEl.textContent = text;
@@ -47,19 +52,42 @@ async function loadRewards() {
     .from("rewards")
     .select("item_label, status, created_at")
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(50);
+
+  allRewards = error || !data ? [] : data;
+  renderRewards();
+}
+
+function renderRewards() {
+  const filtered = allRewards.filter((r) =>
+    activeTab === "pending" ? r.status !== "claimed" : r.status === "claimed"
+  );
 
   rewardsListEl.innerHTML = "";
-  if (error || !data || data.length === 0) {
-    rewardsListEl.innerHTML = "<li>No rewards yet — spin the roulette once you've earned a spin.</li>";
+
+  if (filtered.length === 0) {
+    rewardsListEl.innerHTML =
+      activeTab === "pending"
+        ? "<li>No rewards waiting — spin the roulette once you've earned a spin.</li>"
+        : "<li>No claimed rewards yet.</li>";
     return;
   }
 
-  for (const reward of data) {
+  for (const reward of filtered) {
     const li = document.createElement("li");
-    li.textContent = `${reward.item_label} — ${reward.status === "claimed" ? "Claimed" : "Pending in-game claim"}`;
+    li.textContent =
+      activeTab === "pending"
+        ? `${reward.item_label} — Pending in-game claim (expires 24h after winning)`
+        : `${reward.item_label} — Claimed`;
     rewardsListEl.appendChild(li);
   }
+}
+
+function setActiveTab(tab) {
+  activeTab = tab;
+  tabPendingBtn.classList.toggle("tab-btn-active", tab === "pending");
+  tabHistoryBtn.classList.toggle("tab-btn-active", tab === "history");
+  renderRewards();
 }
 
 async function refreshPlayerData() {
@@ -136,5 +164,8 @@ spinBtn.addEventListener("click", async () => {
   }
   await refreshPlayerData();
 });
+
+tabPendingBtn.addEventListener("click", () => setActiveTab("pending"));
+tabHistoryBtn.addEventListener("click", () => setActiveTab("history"));
 
 init();

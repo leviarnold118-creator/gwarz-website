@@ -1,10 +1,13 @@
 // Edge Function: mod-claim-rewards
-// Called by the DayZ server mod (Gwarz-UI), not by the website. Auth is a shared
-// secret in the X-Mod-Secret header — there's no Supabase login involved here, since
-// the mod only knows a player's SteamID, not a website session.
+// Called by the DayZ server mod (GwarzWebsiteGUI), not by the website. Auth is a
+// shared secret — there's no Supabase login involved here, since the mod only knows
+// a player's SteamID, not a website session. Accepted either as the X-Mod-Secret
+// header OR a ?secret= query param (DayZ's Enfusion REST API's custom-header syntax
+// wasn't something we could verify in advance, so the query param is the reliable
+// fallback the mod actually uses).
 //
-// GET  ?steam_id=XXXX          -> list that player's pending (unclaimed) rewards
-// POST { reward_id: "..." }    -> mark one reward as claimed (after the mod spawns it)
+// GET  ?steam_id=XXXX&secret=XXXX          -> list that player's pending rewards
+// POST ?secret=XXXX  { reward_id: "..." }  -> mark one reward as claimed
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -14,20 +17,20 @@ const MOD_SHARED_SECRET = Deno.env.get("MOD_SHARED_SECRET")!;
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-function checkSecret(req: Request): boolean {
-  const provided = req.headers.get("X-Mod-Secret") ?? "";
+function checkSecret(req: Request, url: URL): boolean {
+  const provided = req.headers.get("X-Mod-Secret") ?? url.searchParams.get("secret") ?? "";
   return provided.length > 0 && provided === MOD_SHARED_SECRET;
 }
 
 Deno.serve(async (req) => {
-  if (!checkSecret(req)) {
+  const url = new URL(req.url);
+
+  if (!checkSecret(req, url)) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  const url = new URL(req.url);
 
   if (req.method === "GET") {
     const steamId = url.searchParams.get("steam_id") ?? "";

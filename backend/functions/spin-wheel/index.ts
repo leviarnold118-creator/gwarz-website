@@ -1,17 +1,20 @@
 // Edge Function: spin-wheel
 // Spends one banked spin for the authenticated player and awards a random item.
 //
-// PLACEHOLDER REWARD LIST — swap classnames/labels/weights for real DayZ items
-// whenever you're ready. Weights are relative (they don't need to add to 100).
+// Real vanilla DayZ classnames (cross-checked against two independent DayZ item-ID
+// references, 2026-08-16) — a starter set for testing the claim/spawn flow end to
+// end. Adjust the list/weights/labels whenever you want different rewards; weights
+// are relative (they don't need to add to 100).
 
 const WHEEL_ITEMS = [
-  { classname: "PLACEHOLDER_AmmoBox_556", label: "Box of 5.56 Ammo", weight: 25 },
-  { classname: "PLACEHOLDER_Medkit", label: "Medical Kit", weight: 20 },
-  { classname: "PLACEHOLDER_TacticalVest", label: "Tactical Vest", weight: 15 },
-  { classname: "PLACEHOLDER_Backpack", label: "Large Backpack", weight: 15 },
-  { classname: "PLACEHOLDER_BuildingSupplies", label: "Building Supplies Bundle", weight: 10 },
-  { classname: "PLACEHOLDER_Suppressor", label: "Suppressor", weight: 10 },
-  { classname: "PLACEHOLDER_M4A1", label: "M4A1 Rifle", weight: 5 },
+  { classname: "BandageDressing", label: "Bandage", weight: 25 },
+  { classname: "PainkillerTablets", label: "Painkillers", weight: 20 },
+  { classname: "Morphine", label: "Morphine", weight: 15 },
+  { classname: "TetracyclineAntibiotics", label: "Antibiotics", weight: 10 },
+  { classname: "Mag_STANAG_30Rnd", label: "M4 30rd Mag", weight: 12 },
+  { classname: "Mag_AKM_30Rnd", label: "AKM 30rd Mag", weight: 10 },
+  { classname: "AKM", label: "AKM Rifle", weight: 5 },
+  { classname: "M4A1", label: "M4A1 Rifle", weight: 3 },
 ];
 
 import { createClient } from "npm:@supabase/supabase-js@2";
