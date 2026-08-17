@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GWARZ DayZ — Account</title>
+<title>GWARZ DayZ — Shop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -34,31 +34,14 @@
 <main>
   <section class="section account-section">
     <div class="wrap">
-      <h1>Your GWARZ Account</h1>
-      <p class="section-note">Log in and link your Steam and Discord accounts. Head to the <a href="wheel.html">Roulette page</a> to spin for loot once you're linked.</p>
+      <h1>Shop</h1>
+      <p class="section-note">Gear sets and loot, some purchasable, some free once you've put in the hours. Everything here is claimed and worn through the in-game GWARZ menu.</p>
 
       <div id="status-message" class="status-message" hidden></div>
 
-      <div id="logged-out-view" hidden>
-        <button id="discord-login-btn" class="btn btn-primary">Log in with Discord</button>
-      </div>
+      <div id="logged-out-hint" class="section-note">Log in to see your playtime progress toward free unlocks. <a href="account.html">Log In</a></div>
 
-      <div id="logged-in-view" hidden>
-        <div class="card account-card">
-          <h2>Linked Accounts</h2>
-          <div class="server-row">
-            <span class="server-label">Discord</span>
-            <span id="discord-status" class="server-value">—</span>
-          </div>
-          <div class="server-row">
-            <span class="server-label">Steam</span>
-            <span id="steam-status" class="server-value">—</span>
-          </div>
-          <button id="steam-link-btn" class="btn btn-primary" hidden>Link Steam Account</button>
-        </div>
-
-        <button id="logout-btn" class="btn btn-ghost stacked-card">Log out</button>
-      </div>
+      <div id="shop-grid" class="shop-grid"></div>
     </div>
   </section>
 </main>
@@ -75,7 +58,7 @@
 </footer>
 
 <script src="script.js"></script>
-<script src="account.js"></script>
+<script src="shop.js"></script>
 <script src="profile-widget.js"></script>
 </body>
 </html>
