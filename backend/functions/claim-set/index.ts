@@ -6,9 +6,9 @@
 // tab, which asks mod-list-sets for whatever's in claimed_sets.
 //
 // DELETE { set_key } also lives here (not a separate function) -- it's the "Unclaim"
-// button on the shop page, there mainly so claiming can be tested repeatedly without
-// having to delete rows in the Supabase table editor by hand. No playtime check on
-// the way out -- removing ownership doesn't need the same gate that granting it does.
+// button on the shop page, a real permanent feature letting a player drop a set
+// they've claimed. No playtime check on the way out -- removing ownership doesn't
+// need the same gate that granting it does.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 

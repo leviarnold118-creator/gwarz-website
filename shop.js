@@ -89,8 +89,10 @@ async function claimSet(setKey) {
   }
 }
 
-// Testing aid -- lets a set be claimed and reclaimed without editing the Supabase
-// table by hand. No confirmation dialog on purpose, to keep that loop fast.
+// Lets a player drop a set they've claimed (e.g. to free up which sets show as
+// claimed if they change their mind). No confirmation dialog on purpose -- it only
+// removes ownership on the website, it doesn't touch anything already applied
+// in-game, so there's nothing destructive enough here to need one.
 async function unclaimSet(setKey) {
   if (claimInFlightKey) return;
   claimInFlightKey = setKey;
@@ -185,8 +187,8 @@ function renderCard(set) {
   if (claimed) {
     const unclaimBtn = document.createElement("button");
     unclaimBtn.type = "button";
-    unclaimBtn.className = "shop-action-unclaim";
-    unclaimBtn.textContent = claiming ? "Unclaiming..." : "Unclaim (testing)";
+    unclaimBtn.className = "shop-action shop-action-unclaim";
+    unclaimBtn.textContent = claiming ? "Unclaiming..." : "Unclaim";
     unclaimBtn.disabled = claiming;
     unclaimBtn.addEventListener("click", () => unclaimSet(set.key));
     card.appendChild(unclaimBtn);
