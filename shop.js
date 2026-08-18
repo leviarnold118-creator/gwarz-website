@@ -138,12 +138,15 @@ function renderCard(set) {
 
   const imageSrc = SET_IMAGES[set.key];
   if (imageSrc) {
+    const frame = document.createElement("div");
+    frame.className = "shop-preview-frame";
     const preview = document.createElement("img");
     preview.className = "shop-preview-image";
     if (!unlocked && !claimed) preview.classList.add("shop-preview-image-locked");
     preview.src = imageSrc;
     preview.alt = set.name;
-    card.appendChild(preview);
+    frame.appendChild(preview);
+    card.appendChild(frame);
   } else {
     const icon = document.createElement("div");
     icon.className = "shop-icon";
