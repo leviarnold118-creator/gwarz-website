@@ -20,6 +20,14 @@ const SET_THEMES = {
   green_palm_set: "palm",
 };
 
+// Real character-preview pictures for sets that have one -- falls back to the
+// abbreviated-letters icon (see abbreviate()) for any set not listed here.
+const SET_IMAGES = {
+  green_palm_set: "images/sets/green-palm-set.png",
+  purple_palm_set: "images/sets/purple-palm-set.png",
+  red_palm_set: "images/sets/red-palm-set.png",
+};
+
 const statusMessageEl = document.getElementById("status-message");
 const loggedOutHintEl = document.getElementById("logged-out-hint");
 const shopGridEl = document.getElementById("shop-grid");
@@ -128,13 +136,23 @@ function renderCard(set) {
   const claimed = currentClaimedKeys.has(set.key);
   const claiming = claimInFlightKey === set.key;
 
-  const icon = document.createElement("div");
-  icon.className = "shop-icon";
-  const theme = SET_THEMES[set.key];
-  if (theme) icon.classList.add(`shop-icon-theme-${theme}`);
-  if (!unlocked && !claimed) icon.classList.add("shop-icon-locked");
-  icon.textContent = abbreviate(set.name);
-  card.appendChild(icon);
+  const imageSrc = SET_IMAGES[set.key];
+  if (imageSrc) {
+    const preview = document.createElement("img");
+    preview.className = "shop-preview-image";
+    if (!unlocked && !claimed) preview.classList.add("shop-preview-image-locked");
+    preview.src = imageSrc;
+    preview.alt = set.name;
+    card.appendChild(preview);
+  } else {
+    const icon = document.createElement("div");
+    icon.className = "shop-icon";
+    const theme = SET_THEMES[set.key];
+    if (theme) icon.classList.add(`shop-icon-theme-${theme}`);
+    if (!unlocked && !claimed) icon.classList.add("shop-icon-locked");
+    icon.textContent = abbreviate(set.name);
+    card.appendChild(icon);
+  }
 
   const name = document.createElement("div");
   name.className = "shop-name";

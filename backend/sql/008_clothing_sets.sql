@@ -2,7 +2,13 @@
 -- truth for what a set actually contains (real DayZ classnames) -- both shop.js and
 -- the mod's Clothing tab read from it (the mod via mod-list-sets, joined against
 -- claimed_sets), so there's no separate copy of this data to keep in sync by hand.
--- Run this once in Supabase SQL Editor, after 001_schema.sql.
+--
+-- This file is meant to be edited and re-run whenever the catalog changes (new set,
+-- fixed classname, etc) -- every statement here is safe to run again: table/index
+-- creation is guarded with IF NOT EXISTS, policies are dropped and recreated, and the
+-- seed data at the bottom uses ON CONFLICT ... DO UPDATE so editing a values() row and
+-- re-running converges existing rows to match instead of erroring or being skipped.
+-- Run in Supabase SQL Editor, after 001_schema.sql.
 
 create table if not exists public.clothing_sets (
   key text primary key,
@@ -39,20 +45,23 @@ alter table public.claimed_sets enable row level security;
 
 -- The catalog itself isn't sensitive -- shop.js needs to read it while logged out too,
 -- to show what exists and what it takes to unlock it.
+drop policy if exists "clothing_sets_select_all" on public.clothing_sets;
 create policy "clothing_sets_select_all" on public.clothing_sets
   for select using (true);
 
+drop policy if exists "claimed_sets_select_own" on public.claimed_sets;
 create policy "claimed_sets_select_own" on public.claimed_sets
   for select using (
     player_id in (select id from public.players where id = auth.uid())
   );
 
--- Only the two sets with classnames actually confirmed real this session. Green Palm
--- Set needs the sk_palm/sk_tech/Drip clothing mods installed to render in-game (won't
--- show on a vanilla test server, but claiming/owning it doesn't require that -- only
--- wearing it does). Black/Green/Blue sets stay off the shop page (see shop.js) until
--- their piece classnames are verified the same way -- don't add rows for those here
--- until that happens, since a wrong classname fails silently in CreateAttachment.
+-- Only sets with classnames actually confirmed real. Palm sets (Green/Purple/Red)
+-- need the sk_palm/sk_tech clothing mods installed to render in-game (won't show on
+-- a vanilla test server, but claiming/owning one doesn't require that -- only wearing
+-- it does). Black/Green/Blue *vanilla* sets stay out of this table entirely (see
+-- shop.js) until their piece classnames are verified real -- don't add rows for
+-- those here until that happens, since a wrong classname fails silently in
+-- CreateAttachment.
 insert into public.clothing_sets (
   key, name, unlock_hours, active,
   body_classname, body_label,
@@ -63,21 +72,51 @@ insert into public.clothing_sets (
   headgear_classname, headgear_label
 ) values
   (
-    'red_vanilla_set', 'Red Set', 25, true,
-    'Hoodie_Red', 'Red Hoodie',
-    'Jeans_Blue', 'Blue Jeans',
-    'Sneakers_White', 'White Sneakers',
-    'LeatherGloves_Black', 'Leather Gloves',
-    'BalaclavaMask_Black', 'Black Balaclava',
-    'BaseballCap_Red', 'Red Cap'
-  ),
-  (
     'green_palm_set', 'Green Palm Set', 25, true,
     'sk_jacket_palm_green', 'Green Palm Jacket',
     'sk_pants_palm_green', 'Green Palm Pants',
-    'Drip_CrocSocks_Relaxed_black', 'Green Palm Socks',
+    'Sneakers_White', 'White Sneakers',
     'SurgicalGloves_White', 'Surgical Gloves',
-    'sk_tech_mask_Black', 'Green Palm Mask',
+    'sk_tech_mask_Black', 'Palm Tech Mask',
+    'BOUJI1_HAT', 'Bouji Hat'
+  ),
+  (
+    'purple_palm_set', 'Purple Palm Set', 25, true,
+    'sk_jacket_palm_purp', 'Purple Palm Jacket',
+    'sk_pants_palm_purp', 'Purple Palm Pants',
+    'Sneakers_Black', 'Black Sneakers',
+    'SurgicalGloves_White', 'Surgical Gloves',
+    'sk_tech_mask_Black', 'Palm Tech Mask',
+    'BOUJI1_HAT', 'Bouji Hat'
+  ),
+  (
+    'red_palm_set', 'Red Palm Set', 25, true,
+    'sk_jacket_palm_red', 'Red Palm Jacket',
+    'sk_pants_palm_red', 'Red Palm Pants',
+    'Sneakers_Red', 'Red Sneakers',
+    'SurgicalGloves_White', 'Surgical Gloves',
+    'sk_tech_mask_Black', 'Palm Tech Mask',
     'BOUJI1_HAT', 'Bouji Hat'
   )
-on conflict (key) do nothing;
+on conflict (key) do update set
+  name = excluded.name,
+  unlock_hours = excluded.unlock_hours,
+  active = excluded.active,
+  body_classname = excluded.body_classname,
+  body_label = excluded.body_label,
+  legs_classname = excluded.legs_classname,
+  legs_label = excluded.legs_label,
+  feet_classname = excluded.feet_classname,
+  feet_label = excluded.feet_label,
+  gloves_classname = excluded.gloves_classname,
+  gloves_label = excluded.gloves_label,
+  mask_classname = excluded.mask_classname,
+  mask_label = excluded.mask_label,
+  headgear_classname = excluded.headgear_classname,
+  headgear_label = excluded.headgear_label;
+
+-- Red Set (the vanilla test set) is retired -- deactivated rather than deleted so
+-- it doesn't cascade-delete anyone's existing claimed_sets row, it just stops
+-- showing up in the shop and in mod-list-sets going forward. No-op if it was never
+-- inserted in the first place.
+update public.clothing_sets set active = false where key = 'red_vanilla_set';

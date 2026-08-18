@@ -903,6 +903,17 @@ a { color: inherit; text-decoration: none; }
 .shop-icon-theme-blue { background: rgba(60, 110, 170, 0.22); color: #9fc4ec; border-color: #3c6eaa; }
 .shop-icon-theme-palm { background: rgba(255, 204, 102, 0.16); color: var(--brand); border-color: var(--brand-dim); }
 
+.shop-preview-image {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  object-position: center top;
+}
+
+.shop-preview-image-locked {
+  filter: grayscale(0.6) brightness(0.7);
+}
+
 .shop-name {
   font-family: var(--font-display);
   font-weight: 400;
