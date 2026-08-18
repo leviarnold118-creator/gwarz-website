@@ -953,6 +953,53 @@ a { color: inherit; text-decoration: none; }
   color: #1a1206;
 }
 
+button.shop-action {
+  border: none;
+  font-family: inherit;
+}
+
+button.shop-action-available {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+button.shop-action-available:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+button.shop-action:disabled {
+  cursor: default;
+}
+
+.shop-action-claimed {
+  background: rgba(90, 140, 70, 0.22);
+  border: 1px solid #5a8c46;
+  color: #a8d99a;
+}
+
+/* Testing-only control, so it reads as secondary/low-stakes next to the real
+   Claim/Claimed button rather than looking like an equally-weighted action. */
+.shop-action-unclaim {
+  margin-top: -4px;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.shop-action-unclaim:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.shop-action-unclaim:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 @media (max-width: 640px) {
   .nav { display: none; }
   .hero { padding: 80px 0 60px; }
