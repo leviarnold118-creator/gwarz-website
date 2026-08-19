@@ -61,14 +61,20 @@ grant select on public.claimed_vehicles to authenticated;
 grant select, insert, update, delete on public.vehicles to service_role;
 grant select, insert, update, delete on public.claimed_vehicles to service_role;
 
--- parts is empty for now -- no confirmed Hatchback_02 part-classname list available
--- (VPPAdminTools only had a reference spawn module for CivilianSedan, not
--- Hatchback). Spawn it once, see what's visibly missing (wheels/doors/battery/
--- spark plug/radiator), then edit parts below and re-run this file -- the update
--- takes effect immediately, no redeploy needed.
+-- Confirmed real part classnames for Hatchback_02_Black.
 insert into public.vehicles (key, name, classname, parts, unlock_hours, active)
 values
-  ('gunter', 'Gunter', 'Hatchback_02_Black', array[]::text[], 0, true)
+  (
+    'gunter', 'Gunter', 'Hatchback_02_Black',
+    array[
+      'Hatchback_02_Door_1_1_Black', 'Hatchback_02_Door_1_2_Black',
+      'Hatchback_02_Door_2_1_Black', 'Hatchback_02_Door_2_2_Black',
+      'Hatchback_02_Hood_Black', 'Hatchback_02_Trunk_Black',
+      'Hatchback_02_Wheel', 'Hatchback_02_Wheel', 'Hatchback_02_Wheel', 'Hatchback_02_Wheel', 'Hatchback_02_Wheel',
+      'CarRadiator', 'SparkPlug', 'CarBattery'
+    ],
+    0, true
+  )
 on conflict (key) do update set
   name = excluded.name,
   classname = excluded.classname,

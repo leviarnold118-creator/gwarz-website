@@ -123,12 +123,24 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Vehicles are a single loadout slot, not a stackable collection like Clothing
+  // Sets -- claiming a new one replaces whatever was claimed before (so the mod's
+  // Vehicles tab only ever shows one option), rather than adding to a list.
+  const { error: replaceError } = await admin
+    .from("claimed_vehicles")
+    .delete()
+    .eq("player_id", player.id);
+
+  if (replaceError) {
+    return new Response(JSON.stringify({ error: "claim_failed" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   const { error: insertError } = await admin
     .from("claimed_vehicles")
-    .upsert(
-      { player_id: player.id, vehicle_key: vehicle.key },
-      { onConflict: "player_id,vehicle_key", ignoreDuplicates: true }
-    );
+    .insert({ player_id: player.id, vehicle_key: vehicle.key });
 
   if (insertError) {
     return new Response(JSON.stringify({ error: "claim_failed" }), {

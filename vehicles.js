@@ -66,7 +66,10 @@ async function claimVehicle(vehicleKey) {
       return;
     }
 
-    currentClaimedKeys.add(vehicleKey);
+    // Claiming replaces whatever was claimed before (server enforces this too) --
+    // only one vehicle is ever "yours" at a time, not a growing collection like
+    // Clothing Sets.
+    currentClaimedKeys = new Set([vehicleKey]);
     showStatus("Claimed! Spawn it in the GWARZ menu's Vehicles tab in-game (you'll need to be in a spawn zone).");
   } catch (e) {
     showStatus("Couldn't reach the server to claim that. Try again.", true);
