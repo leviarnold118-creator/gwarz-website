@@ -26,6 +26,8 @@ const SET_IMAGES = {
   green_palm_set: "images/sets/green-palm-set.png",
   purple_palm_set: "images/sets/purple-palm-set.png",
   red_palm_set: "images/sets/red-palm-set.png",
+  black_nike_tech: "images/sets/black-nike-tech.png",
+  white_nike_tech: "images/sets/white-nike-tech.png",
 };
 
 const statusMessageEl = document.getElementById("status-message");
