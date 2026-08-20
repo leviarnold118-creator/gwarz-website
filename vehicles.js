@@ -11,6 +11,12 @@ const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
 
 const sb = window.sb || (window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY));
 
+// Real vehicle preview pictures for vehicles that have one -- falls back to the
+// abbreviated-letters icon (see abbreviate()) for any vehicle not listed here.
+const VEHICLE_IMAGES = {
+  gunter: "images/vehicles/gunter.png",
+};
+
 const statusMessageEl = document.getElementById("status-message");
 const loggedOutHintEl = document.getElementById("logged-out-hint");
 const vehiclesGridEl = document.getElementById("vehicles-grid");
@@ -114,11 +120,24 @@ function renderCard(vehicle) {
   const claimed = currentClaimedKeys.has(vehicle.key);
   const claiming = claimInFlightKey === vehicle.key;
 
-  const icon = document.createElement("div");
-  icon.className = "shop-icon";
-  if (!unlocked && !claimed) icon.classList.add("shop-icon-locked");
-  icon.textContent = abbreviate(vehicle.name);
-  card.appendChild(icon);
+  const imageSrc = VEHICLE_IMAGES[vehicle.key];
+  if (imageSrc) {
+    const frame = document.createElement("div");
+    frame.className = "shop-preview-frame";
+    const preview = document.createElement("img");
+    preview.className = "shop-preview-image";
+    if (!unlocked && !claimed) preview.classList.add("shop-preview-image-locked");
+    preview.src = imageSrc;
+    preview.alt = vehicle.name;
+    frame.appendChild(preview);
+    card.appendChild(frame);
+  } else {
+    const icon = document.createElement("div");
+    icon.className = "shop-icon";
+    if (!unlocked && !claimed) icon.classList.add("shop-icon-locked");
+    icon.textContent = abbreviate(vehicle.name);
+    card.appendChild(icon);
+  }
 
   const name = document.createElement("div");
   name.className = "shop-name";
