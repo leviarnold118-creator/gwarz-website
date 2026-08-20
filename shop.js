@@ -30,6 +30,7 @@ const SET_IMAGES = {
   white_nike_tech: "images/sets/white-nike-tech.png",
   shadow_serpent_set: "images/sets/shadow-serpent-set.png",
   nightmare_static_set: "images/sets/nightmare-static-set.png",
+  white_girl_summer_set: "images/sets/white-girl-summer-set.png",
 };
 
 const statusMessageEl = document.getElementById("status-message");

@@ -133,6 +133,15 @@ insert into public.clothing_sets (
     'SurgicalGloves_xq', 'Surgical Gloves',
     'SKMask_xq', 'Static Ski Mask',
     'Boonie_xq', 'Boonie Hat'
+  ),
+  (
+    'white_girl_summer_set', 'White Girl Summer Set', 50, true,
+    'BOUJI2_Shirt', 'Bouji Shirt',
+    'FOG_AthleticShorts_Black', 'Black Athletic Shorts',
+    'Drip_NikeAirForce_1_triple_white', 'White Nike Air Force 1',
+    'FOG_FerroGloves_Black', 'Black Ferro Gloves',
+    'FOG_Knight_Mask_Black', 'Black Knight Mask',
+    'FOG_Glasses_PitViper_Tropics', 'Pit Viper Tropics Glasses'
   )
 on conflict (key) do update set
   name = excluded.name,
