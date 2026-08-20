@@ -28,6 +28,8 @@ const SET_IMAGES = {
   red_palm_set: "images/sets/red-palm-set.png",
   black_nike_tech: "images/sets/black-nike-tech.png",
   white_nike_tech: "images/sets/white-nike-tech.png",
+  shadow_serpent_set: "images/sets/shadow-serpent-set.png",
+  nightmare_static_set: "images/sets/nightmare-static-set.png",
 };
 
 const statusMessageEl = document.getElementById("status-message");
