@@ -31,6 +31,7 @@ const SET_IMAGES = {
   shadow_serpent_set: "images/sets/shadow-serpent-set.png",
   nightmare_static_set: "images/sets/nightmare-static-set.png",
   white_girl_summer_set: "images/sets/white-girl-summer-set.png",
+  palm_mix_set: "images/sets/palm-mix-set.png",
 };
 
 const statusMessageEl = document.getElementById("status-message");
